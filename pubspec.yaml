@@ -1,0 +1,39 @@
+name: myapp
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  cupertino_icons: ^1.0.8
+
+  # Core Functionality
+  camera: ^0.11.3        # For in-app camera
+  geolocator: ^14.0.2      # For high-accuracy GPS
+  exif: ^3.3.0             # For reading EXIF data
+  uuid: ^4.3.3             # For unique localUploadId
+  path_provider: ^2.1.2    # For device directories
+  http: ^1.6.0            # For backend API requests
+  permission_handler: ^12.0.1
+
+  # Optional state management
+  # provider: ^6.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Add assets if needed
+  assets:
+    - /home/user/myapp/lib/screens/assets
