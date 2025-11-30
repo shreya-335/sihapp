@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/screens/camera_screen.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 final Color _primaryGreen = Colors.green.shade700;
 final Color _darkGreen = Colors.green.shade900;
@@ -56,7 +57,7 @@ class HomeScreen extends StatelessWidget {
               backgroundColor: _lightGreen,
               child: ClipOval(
                 child: FadeInImage(
-                  placeholder: const AssetImage('assets/bg_green.jpg'),
+                  placeholder: MemoryImage(kTransparentImage),
                   image: const NetworkImage(
                       'https://randomuser.me/api/portraits/men/32.jpg'),
                   fit: BoxFit.cover,
@@ -64,7 +65,11 @@ class HomeScreen extends StatelessWidget {
                   height: 40,
                   fadeInDuration: const Duration(milliseconds: 300),
                   imageErrorBuilder: (context, error, stackTrace) {
-                    return Icon(Icons.person, color: _primaryGreen);
+                    return Container(
+                      color: Colors.green,
+                      width: 40,
+                      height: 40,
+                    );
                   },
                 ),
               ),
@@ -262,22 +267,25 @@ class HomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '28°C Sunny',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Humidity: 65% | Wind: 12 km/h',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '28°C Sunny',
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Humidity: 65% | Wind: 12 km/h',
+                      style: TextStyle(color: Colors.grey),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
               FadeInImage(
-                placeholder: const AssetImage('assets/bg_green.jpg'),
+                placeholder: MemoryImage(kTransparentImage),
                 image: const NetworkImage('https://openweathermap.org/img/wn/01d@2x.png'),
                 width: 48,
                 height: 48,
@@ -286,11 +294,7 @@ class HomeScreen extends StatelessWidget {
                   return Container(
                     width: 48,
                     height: 48,
-                    color: Colors.grey.shade200, // Placeholder color
-                    child: Icon(
-                      Icons.wb_sunny,
-                      color: Colors.orange.shade300,
-                    ),
+                    color: Colors.green,
                   );
                 },
               ),

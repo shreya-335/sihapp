@@ -196,12 +196,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
-              image: const DecorationImage(
-                image: AssetImage(
-                  'assets/blurred_field_bg.jpg',
+              image: DecorationImage(
+                image: const NetworkImage(
+                  'https://images.unsplash.com/photo-1542282332-1b112310350d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 ), // Placeholder for background image
                 fit: BoxFit.cover,
-                opacity: 0.15,
+                colorFilter: ColorFilter.mode(
+                    Colors.black.withAlpha(38), BlendMode.dstATop),
               ),
             ),
           ),

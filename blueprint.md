@@ -1,37 +1,69 @@
-# Project Blueprint
+# Agri-Culture App Blueprint
 
 ## Overview
 
-This is a Flutter application designed to help farmers manage their crop claims. It provides a simple and intuitive interface for filing new claims, tracking existing claims, and accessing important information related to their farm.
+This document outlines the architecture and implementation details of the Agri-Culture mobile application, a Flutter-based tool for farmers. The app provides features for user authentication, farm management, and location-verified photo uploads.
 
-## Features
+## Features & Design
 
-*   **Onboarding:**
-    *   Language selection
-    *   Login/Signup
-    *   Profile setup, including land and bank details
-*   **Home Screen:**
-    *   Weather card
-    *   Smart farming tools (Finance Ledger, Community Hub)
-    *   Recent activity
-*   **Claim Management:**
-    *   File new claims
-    *   Camera integration for claim documentation
-*   **Advisory:**
-    *   AI-powered chat for farming advice
+### User Onboarding & Authentication
 
-## Dependencies
+The app uses a secure, OTP-based authentication flow for user registration and login.
 
-*   `flutter`
-*   `cupertino_icons`
-*   `camera`
-*   `geolocator`
-*   `exif`
-*   `uuid`
-*   `path_provider`
-*   `http`
-*   `permission_handler`
-*   `go_router`
-*   `image_picker`
-*   `flutter_test` (dev)
-*   `flutter_lints` (dev)
+*   **Signup:** Users register using their full name, email, and phone number. An OTP is sent to their phone for verification.
+*   **OTP Verification:** The user enters the received OTP to verify their phone number.
+*   **Password Setup:** After successful verification, the user sets a password for their account.
+*   **Login:** Registered users can log in using their phone number and password.
+
+### Farm Management
+
+Once authenticated, users can register their farms.
+
+*   **Add Farm:** Users can add a new farm by providing a name, address, and drawing the farm's boundary on a map.
+*   **Map Interaction:** The app uses the device's GPS to center the map on the user's current location. Users can tap on the map to mark the vertices of their farm.
+*   **Data Submission:** The farm's name, address, and boundary (in GeoJSON format) are sent to the backend and saved.
+
+### Photo Verification
+
+(Future Implementation) The app will allow users to upload photos that are geo-tagged and verified against their registered farm location.
+
+## Current Implementation Plan
+
+### Task: Implement End-to-End User Onboarding and Farm Setup
+
+**Objective:** To create a seamless flow for users to register, authenticate, and add their first farm.
+
+**Steps:**
+
+1.  **API Client:**
+    *   Implemented `requestOtp`, `verifyOtp`, `setPassword`, and `login` methods for handling authentication.
+    *   Added an `addFarm` method to send farm data to the backend.
+    *   Replaced the hardcoded authentication token with a dynamic one.
+
+2.  **Signup Screen (`signup_screen.dart`):**
+    *   Modified the UI to include a phone number field instead of a password field.
+    *   Implemented the `requestOtp` method to initiate the OTP flow.
+    *   Added navigation to the `VerifyOTPScreen` upon successful OTP request.
+
+3.  **OTP Verification Screen (`verify_otp_screen.dart`):**
+    *   Created a new screen for users to enter the OTP.
+    *   Implemented the `verifyOtp` method to validate the OTP.
+    *   Added navigation to the `SetPasswordScreen` upon successful verification.
+
+4.  **Set Password Screen (`set_password_screen.dart`):**
+    *   Created a new screen for users to set their password.
+    *   Implemented the `setPassword` method to save the user's password.
+    *   Added navigation to the `AddFarmScreen` upon successful password setup.
+
+5.  **Login Screen (`login_screen.dart`):**
+    *   Updated the login screen to use the new `login` method in the `ApiClient`.
+    *   Implemented navigation to the `AddFarmScreen` upon successful login.
+
+6.  **Add Farm Screen (`add_farm_screen.dart`):**
+    *   Updated the screen to use the `addFarm` method in the `ApiClient`.
+    *   Removed the redundant `FarmService`.
+
+7.  **Routing (`router.dart`):**
+    *   Added new routes for `/verify-otp`, `/set-password`, and `/add-farm`.
+    *   Configured the routes to handle parameters passed between screens.
+    *   Set the initial route to `/signup` to start the onboarding process.

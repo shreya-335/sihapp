@@ -1,7 +1,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 // A mock HTTP client that always returns a transparent image.
 class MockHttpClient implements HttpClient {

@@ -1,25 +1,21 @@
 
-// lib/screens/add_farm_screen.dart
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import '../models/farm_model.dart';
-import '../services/farm_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 
-// Assuming you have a way to get the current access token
-const String mockAccessToken = "MOCK_JWT_TOKEN"; 
 
 class AddFarmScreen extends StatefulWidget {
   // Pass the user's access token to the screen
   final String accessToken;
   // Optional callback to be executed when the process is complete (saved or skipped)
-  final VoidCallback? onComplete; 
-  
-  const AddFarmScreen({super.key, this.accessToken = mockAccessToken, this.onComplete});
+  final VoidCallback? onComplete;
+
+  const AddFarmScreen(
+      {super.key, required this.accessToken, this.onComplete});
 
   @override
   State<AddFarmScreen> createState() => _AddFarmScreenState();
@@ -86,7 +82,8 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
   }
 
   void _handleMapTap(TapPosition tapPosition, LatLng latLng) {
-    if (_polygonPoints.length < 10) { // Limit points for simplicity/performance
+    if (_polygonPoints.length < 10) {
+      // Limit points for simplicity/performance
       setState(() {
         _polygonPoints.add(latLng);
       });
@@ -100,16 +97,12 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
       _polygonPoints.clear();
     });
   }
-  
+
   void _onSkip() {
     // Optionally log this skip action
     log("User skipped adding farm during onboarding.");
-    if (widget.onComplete != null) {
-      widget.onComplete!();
-    } else {
-       if (mounted) {
-        Navigator.of(context).pop();
-      }
+    if (mounted) {
+      context.go('/home');
     }
   }
 
@@ -124,35 +117,19 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
       _isLoading = true;
     });
 
-    try {
-      final boundary = FarmBoundary.fromLatLng(_polygonPoints);
-      final request = CreateFarmRequest(
-        name: _nameController.text.trim(),
-        address: _addressController.text.trim(),
-        boundary: boundary,
-      );
+    // Simulate network delay and bypass backend call for frontend testing
+    await Future.delayed(const Duration(seconds: 1));
 
-      final farmService = FarmService(widget.accessToken);
-      await farmService.createFarm(request);
+    _showSnackbar(
+        "Farm '${_nameController.text.trim()}' created successfully!");
 
-      _showSnackbar("Farm '${request.name}' created successfully!");
-      
-      // Call the completion callback to signal moving to the next onboarding step or main screen
-      if (widget.onComplete != null) {
-        widget.onComplete!();
-      } else {
-         if (mounted) {
-          Navigator.of(context).pop();
-        }
-      }
-
-    } catch (e) {
-      _showSnackbar("Error submitting farm: ${e.toString()}", isError: true);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+    if (mounted) {
+      context.go('/home');
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _showSnackbar(String message, {bool isError = false}) {
@@ -168,14 +145,16 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
   Widget build(BuildContext context) {
     // Determine the color of the polygon line (blue for open, green for closed/ready)
     final color = _polygonPoints.length >= 3 ? Colors.green : Colors.blue;
-    
+
     // The polygon for flutter_map requires the list of LatLngs directly.
-    final List<LatLng> polygonToDraw = _polygonPoints.length >= 3 
+    final List<LatLng> polygonToDraw = _polygonPoints.length >= 3
         ? [..._polygonPoints, _polygonPoints.first] // Close the polygon visually
         : _polygonPoints;
 
     // Check if the form is ready to be submitted
-    final isSubmitReady = _polygonPoints.length >= 3 && _nameController.text.isNotEmpty && _addressController.text.isNotEmpty;
+    final isSubmitReady = _polygonPoints.length >= 3 &&
+        _nameController.text.isNotEmpty &&
+        _addressController.text.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -188,7 +167,8 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
             onPressed: _onSkip,
             child: const Text(
               'Skip',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -205,10 +185,13 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Farm Name',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter a name.';
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a name.';
+                  }
                   return null;
                 },
               ),
@@ -217,22 +200,25 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
                 controller: _addressController,
                 decoration: const InputDecoration(
                   labelText: 'Address/Description',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter an address or description.';
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an address or description.';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 24),
-              
+
               // Map Instructions
               Text(
                 'Draw Farm Boundary: Tap on the map to mark the corners (vertices) of your farm.',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 12),
-              
+
               // Map View
               SizedBox(
                 height: 400, // Fixed height for the map
@@ -248,13 +234,11 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
                       ),
                       children: [
                         TileLayer(
-                          // Using a standard OpenStreetMap tile layer. 
-                          // If you have a true satellite tile URL (e.g., from Mapbox, etc.), replace it here.
-                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', 
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                           userAgentPackageName: 'com.example.myapp',
-                          // Add other options here if using a satellite provider (e.g., attribution, API key parameter)
                         ),
-                        
+
                         // Polygon Layer to show the farm boundary
                         if (polygonToDraw.isNotEmpty)
                           PolygonLayer(
@@ -304,21 +288,26 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
                   OutlinedButton.icon(
                     onPressed: _clearBoundary,
                     icon: const Icon(Icons.clear, color: Colors.red),
-                    label: const Text('Clear Boundary', style: TextStyle(color: Colors.red)),
+                    label: const Text('Clear Boundary',
+                        style: TextStyle(color: Colors.red)),
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton.icon(
-                    onPressed: _isLoading || !isSubmitReady ? null : _submitFarm,
+                    onPressed:
+                        _isLoading || !isSubmitReady ? null : _submitFarm,
                     icon: const Icon(Icons.save),
                     label: const Text('Save Farm'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green.shade600,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
                 ],
