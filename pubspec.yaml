@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.0
+  sdk: '>=3.9.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -14,26 +14,29 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # Core Functionality
-  camera: ^0.11.3        # For in-app camera
-  geolocator: ^14.0.2      # For high-accuracy GPS
-  exif: ^3.3.0             # For reading EXIF data
-  uuid: ^4.3.3             # For unique localUploadId
-  path_provider: ^2.1.2    # For device directories
-  http: ^1.6.0            # For backend API requests
+  camera: ^0.11.3
+  geolocator: ^14.0.2
+  exif: ^3.3.0
+  uuid: ^4.3.3
+  path_provider: ^2.1.2
+  http: ^1.6.0
   permission_handler: ^12.0.1
-
-  # Optional state management
-  # provider: ^6.1.1
+  go_router: ^17.0.0
+  image_picker: ^1.2.1
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+  provider: ^6.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+  mockito: ^5.6.1
+  build_runner: ^2.10.4
 
 flutter:
   uses-material-design: true
 
-  # Add assets if needed
   assets:
-    - /home/user/myapp/lib/screens/assets
+    - assets/
